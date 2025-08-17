@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài kiểm tra Toán Lớp 6 - 90 Phút</title>
+    <title>Bài kiểm tra số 1 toán lớp 6 của BẠCH THÁI HOÀ</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- Chosen Palette: Warm Neutrals -->
-    <!-- Application Structure Plan: Ứng dụng được cấu trúc lại thành một bài kiểm tra theo từng giai đoạn. Giai đoạn 1 là màn hình bắt đầu, giới thiệu bài kiểm tra và luật chơi. Giai đoạn 2 là giao diện làm bài chính, hiển thị 60 câu hỏi trong một cột duy nhất để dễ dàng cuộn và tập trung. Một thanh bên phải cố định chứa đồng hồ đếm ngược, thanh tiến trình và nút nộp bài. Giai đoạn 3 là màn hình kết quả, hiển thị điểm số và cho phép xem lại chi tiết từng câu trả lời. Cấu trúc này tối ưu hóa trải nghiệm làm bài thi, giảm thiểu sự phân tâm và cung cấp phản hồi rõ ràng sau khi hoàn thành. -->
-    <!-- Visualization & Content Choices: Dữ liệu bài tập được tuyển chọn lại thành 60 câu hỏi phù hợp với định dạng điền đáp án ngắn. Mỗi câu hỏi có một ô input để người dùng nhập câu trả lời. Đồng hồ đếm ngược và thanh tiến trình cung cấp phản hồi trực quan về thời gian và tiến độ. Màn hình kết quả sử dụng màu sắc (xanh cho đúng, đỏ cho sai) để làm nổi bật câu trả lời, giúp người dùng nhanh chóng xác định lỗi sai. Tương tác chính là nhập liệu và nộp bài. Việc sử dụng localStorage để lưu trạng thái bài thi (thời gian kết thúc) là một lựa chọn kỹ thuật quan trọng để ngăn chặn gian lận bằng cách tải lại trang. -->
+    <!-- Application Structure Plan: Ứng dụng được cấu trúc lại thành một bài kiểm tra theo từng giai đoạn. Giai đoạn 1 là màn hình bắt đầu, giới thiệu bài kiểm tra và luật chơi, có thêm cơ chế khóa thời gian. Giai đoạn 2 là giao diện làm bài chính, hiển thị 40 câu hỏi. Một thanh bên phải cố định chứa đồng hồ đếm ngược, thanh tiến trình và nút nộp bài. Giai đoạn 3 là màn hình kết quả, hiển thị điểm số và cho phép xem lại chi tiết. Cấu trúc này tối ưu hóa trải nghiệm làm bài thi, giảm thiểu sự phân tâm và cung cấp phản hồi rõ ràng sau khi hoàn thành. -->
+    <!-- Visualization & Content Choices: Dữ liệu bài tập được tuyển chọn lại thành 40 câu hỏi mới, phù hợp với định dạng điền đáp án ngắn. Đồng hồ đếm ngược và thanh tiến trình cung cấp phản hồi trực quan. Màn hình kết quả sử dụng màu sắc (xanh cho đúng, đỏ cho sai) để làm nổi bật câu trả lời. Việc sử dụng localStorage để lưu trạng thái (thời gian kết thúc, đã hoàn thành, kết quả) là lựa chọn kỹ thuật quan trọng để ngăn chặn gian lận và đảm bảo quy tắc chỉ làm bài một lần. -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
@@ -31,25 +31,29 @@
             position: sticky;
             top: 8rem;
         }
+        #start-quiz-btn:disabled {
+            background-color: #d1c4b3;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body class="antialiased">
     <div id="app" class="min-h-screen">
         <header class="bg-white shadow-sm sticky top-0 z-20">
             <div class="container mx-auto px-4 py-3">
-                <h1 class="text-2xl font-bold text-[#6D5D4B]">Bài kiểm tra cuối kỳ I - Môn Toán Lớp 6</h1>
-                <p class="text-sm text-gray-500">Thời gian làm bài: 90 phút</p>
+                <h1 class="text-2xl font-bold text-[#6D5D4B]">Bài kiểm tra số 1 toán lớp 6 của BẠCH THÁI HOÀ</h1>
+                <p class="text-sm text-gray-500">Thời gian làm bài: 60 phút</p>
             </div>
         </header>
 
         <main class="container mx-auto p-4">
             <div id="start-screen" class="text-center bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto mt-10">
                 <h2 class="text-3xl font-bold mb-4 text-[#6D5D4B]">Hướng dẫn làm bài kiểm tra</h2>
-                <p class="mb-2">Bài kiểm tra gồm <strong>60 câu hỏi</strong> điền đáp án.</p>
-                <p class="mb-2">Thời gian làm bài là <strong>90 phút</strong>.</p>
-                <p class="mb-2 text-red-600 font-semibold">Lưu ý: Thời gian sẽ tiếp tục chạy ngay cả khi bạn tải lại trang. Hết giờ bài sẽ tự động nộp.</p>
-                <p class="mb-6">Hãy đọc kỹ đề và điền câu trả lời của bạn vào ô trống.</p>
-                <button id="start-quiz-btn" class="bg-[#8C7B69] text-white font-bold py-3 px-8 rounded-lg hover:bg-[#6D5D4B] transition-colors text-lg">Bắt đầu làm bài</button>
+                <p class="mb-2">Bài kiểm tra gồm <strong>40 câu hỏi</strong> điền đáp án.</p>
+                <p class="mb-2">Thời gian làm bài là <strong>60 phút</strong>.</p>
+                <p class="mb-2 text-blue-600 font-semibold">Bài kiểm tra sẽ mở vào lúc <strong>18:00 ngày 17/08/2025</strong>.</p>
+                <p class="mb-2 text-red-600 font-semibold">Lưu ý: Bạn chỉ được làm bài <strong>MỘT LẦN DUY NHẤT</strong>. Hết giờ bài sẽ tự động nộp.</p>
+                <button id="start-quiz-btn" class="bg-[#8C7B69] text-white font-bold py-3 px-8 rounded-lg hover:bg-[#6D5D4B] transition-colors text-lg mt-4">Bắt đầu làm bài</button>
             </div>
 
             <div id="quiz-section" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -62,24 +66,24 @@
                 <aside class="lg:col-span-4">
                     <div class="sticky-sidebar bg-white p-6 rounded-lg shadow-sm">
                         <h2 class="text-xl font-bold mb-4 text-[#6D5D4B]">Thời gian còn lại</h2>
-                        <div id="timer" class="text-5xl font-bold text-center text-red-500 bg-gray-100 p-4 rounded-lg mb-6">90:00</div>
+                        <div id="timer" class="text-5xl font-bold text-center text-red-500 bg-gray-100 p-4 rounded-lg mb-6">60:00</div>
                         <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
                             <div id="progress-bar" class="bg-[#B9A997] h-2.5 rounded-full" style="width: 0%"></div>
                         </div>
-                        <p id="progress-text" class="text-center text-sm text-gray-600 mb-6">Đã trả lời: 0/60</p>
+                        <p id="progress-text" class="text-center text-sm text-gray-600 mb-6">Đã trả lời: 0/40</p>
                         <button id="submit-quiz-btn" class="w-full bg-green-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-700 transition-colors text-lg">Nộp bài</button>
                     </div>
                 </aside>
             </div>
 
             <div id="results-screen" class="hidden bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto mt-10">
-                <h2 class="text-3xl font-bold mb-4 text-center text-[#6D5D4B]">Kết quả bài kiểm tra</h2>
+                <h2 id="result-title" class="text-3xl font-bold mb-4 text-center text-[#6D5D4B]">Kết quả bài kiểm tra</h2>
                 <div class="text-center mb-6">
                     <p class="text-lg">Số câu đúng:</p>
-                    <p class="text-6xl font-bold text-green-600 my-2"><span id="score"></span>/60</p>
+                    <p class="text-6xl font-bold text-green-600 my-2"><span id="score"></span>/40</p>
                 </div>
                 <div id="review-container">
-                    <h3 class="text-xl font-bold mb-4 border-t pt-4">Xem lại bài làm:</h3>
+                    <h3 class="text-xl font-bold mb-4 border-t pt-4">Xem lại đáp án chi tiết:</h3>
                     <div id="review-answers" class="space-y-4 max-h-[60vh] overflow-y-auto pr-3"></div>
                 </div>
             </div>
@@ -88,65 +92,46 @@
 
     <script>
         const quizQuestions = [
-            { q: "Viết tập hợp A các số tự nhiên lớn hơn 8 và nhỏ hơn 12 bằng cách liệt kê. Viết các phần tử cách nhau bởi dấu phẩy, không có khoảng trắng. Ví dụ: 1,2,3", a: "9,10,11" },
-            { q: "Cho tập hợp B = {2; 4; 6; 8}. Tính chất đặc trưng của các phần tử trong B là 'các số tự nhiên chẵn, khác 0 và nhỏ hơn ...'. Điền số thích hợp vào chỗ trống.", a: "10" },
-            { q: "Viết tập hợp các chữ cái trong từ 'HỌC SINH' (mỗi chữ cái chỉ viết một lần, theo thứ tự từ điển). Viết liền không dấu phẩy, không khoảng trắng. Ví dụ: ABC", a: "CHHINO" },
-            { q: "Tính số phần tử của tập hợp các số tự nhiên không vượt quá 50.", a: "51" },
-            { q: "Viết số 'Hai mươi triệu không trăm linh năm' bằng chữ số.", a: "20000005" },
-            { q: "Cho số 19283. Giá trị của chữ số 9 là bao nhiêu?", a: "9000" },
-            { q: "Viết số La Mã XIX sang hệ thập phân.", a: "19" },
-            { q: "Viết số 34 bằng chữ số La Mã.", a: "XXXIV" },
-            { q: "Sắp xếp các số sau theo thứ tự tăng dần: 2847; 2748; 4827; 4782. Viết đáp án cách nhau bởi dấu phẩy, không khoảng trắng.", a: "2748,2847,4782,4827" },
-            { q: "Tìm số liền sau của số 9999.", a: "10000" },
-            { q: "Tìm số tự nhiên x, biết 18 ≤ x < 20. Viết các giá trị cách nhau bởi dấu phẩy, không khoảng trắng.", a: "18,19" },
-            { q: "Cho ba số tự nhiên liên tiếp tăng dần a, 200, b. Tìm giá trị của b.", a: "201" },
-            { q: "Tính nhanh: 81 + 243 + 19.", a: "343" },
-            { q: "Tìm số tự nhiên x, biết: 450 - x = 120.", a: "330" },
-            { q: "Một cửa hàng buổi sáng bán 150 kg gạo, buổi chiều bán nhiều hơn buổi sáng 25 kg. Cả ngày cửa hàng bán được bao nhiêu kg gạo?", a: "325" },
-            { q: "Tính tổng của tất cả các số tự nhiên có hai chữ số.", a: "4905" },
-            { q: "Tính nhanh: 25 × 17 × 4.", a: "1700" },
-            { q: "Tìm số tự nhiên x, biết: 1200 : x = 40.", a: "30" },
-            { q: "Tìm số dư trong phép chia 247 cho 5.", a: "2" },
-            { q: "Một trường tổ chức cho 200 học sinh đi tham quan. Cần ít nhất bao nhiêu xe 45 chỗ để chở hết học sinh?", a: "5" },
-            { q: "Tính giá trị của 3⁴.", a: "81" },
-            { q: "Viết kết quả 5³ × 5⁶ dưới dạng một luỹ thừa (ví dụ: 2^3).", a: "5^9" },
-            { q: "Tìm số tự nhiên x, biết 2ˣ = 32.", a: "5" },
-            { q: "So sánh 2³ và 3². Điền dấu >, <, hoặc =.", a: "<" },
-            { q: "Tính: 150 - 100 : 25 × 2.", a: "142" },
-            { q: "Tính: 5 × 3² - 32.", a: "13" },
-            { q: "Tính: 200 : [117 - (23 - 6)].", a: "2" },
-            { q: "Tìm x, biết: 2 × (x + 25) = 100.", a: "25" },
-            { q: "Tìm tất cả các ước của 18. Viết các ước cách nhau bởi dấu phẩy, không khoảng trắng.", a: "1,2,3,6,9,18" },
-            { q: "Tìm 5 bội đầu tiên (kể cả 0) của 7. Viết cách nhau bởi dấu phẩy, không khoảng trắng.", a: "0,7,14,21,28" },
-            { q: "Tổng 150 + 255 có chia hết cho 5 không? (Có/Không)", a: "Có" },
-            { q: "Chứng tỏ rằng tổng ba số tự nhiên liên tiếp luôn chia hết cho 3. Tổng đó bằng 3n + ... Điền số thích hợp.", a: "3" },
-            { q: "Trong các số 124, 345, 780, 298, số nào chia hết cho cả 2 và 5?", a: "780" },
-            { q: "Tìm chữ số * để số 5*8 chia hết cho 3. Tìm giá trị lớn nhất của *.", a: "8" },
-            { q: "Tìm chữ số * để số 45* chia hết cho 9. Tìm giá trị nhỏ nhất của *.", a: "0" },
-            { q: "Tìm các chữ số x, y để số 1x8y chia hết cho 2, 5 và 9. Tìm giá trị của x+y lớn nhất.", a: "9" },
-            { q: "Số 17 là số nguyên tố hay hợp số?", a: "số nguyên tố" },
-            { q: "Phân tích số 60 ra thừa số nguyên tố (viết dạng 2^a*3^b*5^c).", a: "2^2*3*5" },
-            { q: "Tổng 3 × 5 × 7 + 9 là số nguyên tố hay hợp số?", a: "hợp số" },
-            { q: "Một số có phân tích thừa số nguyên tố là 2³ × 5. Số đó có bao nhiêu ước?", a: "8" },
-            { q: "Tìm ƯCLN(24, 36).", a: "12" },
-            { q: "Rút gọn phân số 48/72 về tối giản (dạng a/b).", a: "2/3" },
-            { q: "Tìm số tự nhiên x lớn nhất biết 90 và 126 đều chia hết cho x.", a: "18" },
-            { q: "Một đội y tế có 24 bác sĩ và 108 y tá. Có thể chia thành nhiều nhất bao nhiêu tổ để số bác sĩ và y tá được chia đều?", a: "12" },
-            { q: "Tìm BCNN(8, 12).", a: "24" },
-            { q: "Tìm số tự nhiên x nhỏ nhất khác 0 biết x chia hết cho 12 và 18.", a: "36" },
-            { q: "Học sinh lớp 6 khi xếp hàng 2, 3, 4 đều vừa đủ. Biết số học sinh trong khoảng 35 đến 45. Tính số học sinh.", a: "36" },
-            { q: "Tìm số tự nhiên nhỏ nhất chia cho 3, 4, 5 đều dư 1.", a: "61" },
-            { q: "Tìm số đối của -15.", a: "15" },
-            { q: "Tính |-9|.", a: "9" },
-            { q: "Sắp xếp theo thứ tự tăng dần: 4, -5, 0, 2, -10. Viết cách nhau bởi dấu phẩy, không khoảng trắng.", a: "-10,-5,0,2,4" },
-            { q: "Liệt kê các phần tử của tập hợp A = {x ∈ ℤ | -2 < x ≤ 1}. Viết cách nhau bởi dấu phẩy, không khoảng trắng.", a: "-1,0,1" },
-            { q: "Tính: (-15) + (-28).", a: "-43" },
-            { q: "Tính: 18 - 30.", a: "-12" },
-            { q: "Tính: (-12) - (-18).", a: "6" },
-            { q: "Tính tổng S = 1 + (-2) + 3 + (-4) + ... + 19 + (-20).", a: "-10" },
-            { q: "Bỏ ngoặc rồi tính: (15 + 37) + (52 - 37 - 17).", a: "50" },
-            { q: "Tính: 12 - (15 - 18).", a: "15" },
-            { q: "Tìm x, biết: 15 - (x + 7) = -2.", a: "10" }
+            { q: "Viết tập hợp M các số tự nhiên x sao cho 15 < x ≤ 20 bằng cách liệt kê. (Ví dụ: 1,2,3)", a: "16,17,18,19,20" },
+            { q: "Tìm số tự nhiên có 2 chữ số, biết rằng khi viết thêm chữ số 2 vào bên trái, ta được số mới gấp 9 lần số ban đầu.", a: "25" },
+            { q: "So sánh A = 2022 × 2024 và B = 2023 × 2023. Điền dấu >, <, hoặc =.", a: "<" },
+            { q: "Tính tổng của tất cả các số tự nhiên chẵn có hai chữ số.", a: "2430" },
+            { q: "Tích của hai số là 276. Nếu thêm 19 đơn vị vào một thừa số thì tích mới là 713. Tìm thừa số lớn hơn.", a: "23" },
+            { q: "Tìm số tự nhiên x, biết 1 + 2 + 3 + ... + x = 55.", a: "10" },
+            { q: "So sánh 27⁵ và 243³. Điền dấu >, <, hoặc =.", a: "=" },
+            { q: "Tìm số tự nhiên n, biết: 3ⁿ + 3ⁿ⁺² = 90.", a: "2" },
+            { q: "Tính giá trị biểu thức: 480 : {75 + [7² - 8 × 3] : 5} + 2025⁰.", a: "7" },
+            { q: "Tìm x, biết: 5² × (x - 3) - 20 = 80.", a: "7" },
+            { q: "Tìm n ∈ ℕ để (2n + 7) ⋮ (n + 1). Tìm giá trị lớn nhất của n.", a: "4" },
+            { q: "Chứng tỏ rằng với mọi số tự nhiên n, tích (n+3)(n+6) luôn chia hết cho số nào sau đây: 3, 5, 2?", a: "2" },
+            { q: "Tìm các chữ số x, y để số 1x8y chia hết cho 2, 5 và 9. Tìm giá trị của x lớn nhất.", a: "9" },
+            { q: "Một số chia cho 5 dư 3, chia cho 2 dư 1. Chữ số tận cùng của số đó là gì?", a: "3" },
+            { q: "Tìm các chữ số a, b để số a18b chia hết cho 45. Tìm số a18b lớn nhất.", a: "9180" },
+            { q: "Tìm số nguyên tố p sao cho p+2 và p+4 cũng là các số nguyên tố.", a: "3" },
+            { q: "Tổng của hai số nguyên tố có thể bằng 2025 được không? (Có/Không)", a: "Không" },
+            { q: "Một số được phân tích ra thừa số nguyên tố là 2³ × 3² × 5. Số đó có bao nhiêu ước?", a: "24" },
+            { q: "Tìm hai số tự nhiên a, b biết a+b=48 và ƯCLN(a,b)=6. Tìm tích a*b lớn nhất.", a: "540" },
+            { q: "Tìm số tự nhiên x biết rằng 112 ⋮ x, 140 ⋮ x và 10 < x < 20.", a: "14" },
+            { q: "Một mảnh đất hình chữ nhật dài 120m, rộng 48m. Người ta muốn chia thành các ô vuông bằng nhau để trồng hoa. Cạnh mỗi ô vuông lớn nhất là bao nhiêu mét?", a: "24" },
+            { q: "Tìm BCNN(10, 12, 15).", a: "60" },
+            { q: "Tìm số tự nhiên nhỏ nhất có 3 chữ số chia cho 3, 4, 5 đều dư 1.", a: "121" },
+            { q: "Tìm hai số tự nhiên a, b biết a × b = 360 và BCNN(a,b)=60. Tìm a+b nhỏ nhất.", a: "42" },
+            { q: "Số học sinh khối 6 của một trường trong khoảng 200 đến 400. Khi xếp hàng 12, 15, 18 đều thừa 5 học sinh. Tính số học sinh.", a: "365" },
+            { q: "Một bến xe cứ 10 phút lại có một chuyến xe buýt, 12 phút lại có một chuyến taxi rời bến. Lúc 6 giờ, cả hai xe cùng rời bến. Hỏi lúc mấy giờ tiếp theo, chúng lại cùng rời bến? (Ví dụ: 7 giờ)", a: "7 giờ" },
+            { q: "Tìm tổng tất cả các số nguyên x biết -10 ≤ x < 11.", a: "10" },
+            { q: "Tìm số nguyên x lớn nhất thoả mãn x < -100.", a: "-101" },
+            { q: "Tính tổng: S = 1 + (-2) + 3 + (-4) + ... + 99 + (-100).", a: "-50" },
+            { q: "Tính nhanh: (125 - 679 + 145) - (125 - 679).", a: "145" },
+            { q: "Tìm x ∈ ℤ biết |x-2| = 5. Tìm giá trị nhỏ nhất của x.", a: "-3" },
+            { q: "Một tòa nhà có 10 tầng và 2 tầng hầm (tầng -1, -2). Thang máy đang ở tầng 7, đi xuống 10 tầng. Thang máy dừng lại ở tầng nào?", a: "-2" },
+            { q: "Bỏ ngoặc rồi tính: -(283 - 85) + (283 - 15).", a: "70" },
+            { q: "Tính một cách hợp lí: 21 - 22 + 23 - 24 + ... + 49 - 50.", a: "-15" },
+            { q: "Đơn giản biểu thức: A = (a + b) - (a - b + c). (Viết liền, không khoảng trắng)", a: "2b-c" },
+            { q: "Tìm x, biết: -(x - 12) + 10 = 5 - (13 - x).", a: "15" },
+            { q: "Cho S₁ = 1+(-3)+...+2021+(-2023) và S₂ = (-2)+4+...+(-2022)+2024. Tính S₁+S₂.", a: "0" },
+            { q: "Đặt dấu ngoặc để được kết quả đúng: 7 - 9 - 12 + 4 = 14. (Ví dụ: 7-(9-12)+4)", a: "7-(9-12-4)" },
+            { q: "Cho A = a-b+c và B = -a+b-c. A và B là hai số... (đối nhau/bằng nhau/khác nhau)", a: "đối nhau" },
+            { q: "Tìm số tự nhiên nhỏ nhất có 4 chữ số khác nhau chia hết cho cả 3 và 5.", a: "1035" },
         ];
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -159,13 +144,46 @@
             const timerEl = document.getElementById('timer');
             const progressBar = document.getElementById('progress-bar');
             const progressText = document.getElementById('progress-text');
+            const resultTitle = document.getElementById('result-title');
 
+            const quizDuration = 60 * 60;
+            const questionCount = 40;
+            const targetStartTime = new Date('2025-08-17T18:00:00');
             let timerInterval;
-            const quizDuration = 90 * 60; // 90 minutes in seconds
+            let timeGateInterval;
 
+            function checkCompletionStatus() {
+                const completed = localStorage.getItem('quizCompleted_BTH');
+                if (completed) {
+                    const score = localStorage.getItem('quizScore_BTH');
+                    const reviewData = JSON.parse(localStorage.getItem('quizReviewData_BTH'));
+                    startScreen.classList.add('hidden');
+                    quizSection.classList.add('hidden');
+                    showResults(score, reviewData, true);
+                    return true;
+                }
+                return false;
+            }
+
+            function checkTimeGate() {
+                const now = new Date();
+                if (now >= targetStartTime) {
+                    startBtn.disabled = false;
+                    startBtn.textContent = "Bắt đầu làm bài";
+                    if (timeGateInterval) clearInterval(timeGateInterval);
+                } else {
+                    startBtn.disabled = true;
+                    const remaining = Math.round((targetStartTime - now) / 1000);
+                    const hours = Math.floor(remaining / 3600);
+                    const minutes = Math.floor((remaining % 3600) / 60);
+                    const seconds = remaining % 60;
+                    startBtn.textContent = `Mở sau: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                }
+            }
+            
             function startQuiz() {
                 const endTime = Date.now() + quizDuration * 1000;
-                localStorage.setItem('quizEndTime', endTime);
+                localStorage.setItem('quizEndTime_BTH', endTime);
                 startScreen.classList.add('hidden');
                 quizSection.classList.remove('hidden');
                 renderQuiz();
@@ -197,13 +215,13 @@
                         answeredCount++;
                     }
                 });
-                const percentage = (answeredCount / 60) * 100;
+                const percentage = (answeredCount / questionCount) * 100;
                 progressBar.style.width = `${percentage}%`;
-                progressText.textContent = `Đã trả lời: ${answeredCount}/60`;
+                progressText.textContent = `Đã trả lời: ${answeredCount}/${questionCount}`;
             }
 
             function startTimer() {
-                const endTime = localStorage.getItem('quizEndTime');
+                const endTime = localStorage.getItem('quizEndTime_BTH');
                 if (!endTime) return;
 
                 timerInterval = setInterval(() => {
@@ -226,13 +244,13 @@
                 const userAnswers = [];
                 quizQuestions.forEach((_, index) => {
                     const input = document.getElementById(`q${index}`);
-                    userAnswers.push(input.value.trim().toLowerCase());
+                    userAnswers.push(input ? input.value.trim().toLowerCase() : "");
                 });
 
                 let score = 0;
                 const reviewData = [];
                 quizQuestions.forEach((q, index) => {
-                    const isCorrect = userAnswers[index] === q.a.toLowerCase();
+                    const isCorrect = userAnswers[index].replace(/\s/g, '') === q.a.toLowerCase().replace(/\s/g, '');
                     if (isCorrect) {
                         score++;
                     }
@@ -243,14 +261,21 @@
                         isCorrect: isCorrect
                     });
                 });
-
+                
+                localStorage.setItem('quizCompleted_BTH', 'true');
+                localStorage.setItem('quizScore_BTH', score);
+                localStorage.setItem('quizReviewData_BTH', JSON.stringify(reviewData));
                 showResults(score, reviewData);
-                localStorage.removeItem('quizEndTime');
+                localStorage.removeItem('quizEndTime_BTH');
             }
 
-            function showResults(score, reviewData) {
+            function showResults(score, reviewData, isReview = false) {
                 quizSection.classList.add('hidden');
                 resultsScreen.classList.remove('hidden');
+
+                if (isReview) {
+                    resultTitle.textContent = "Kết quả lần làm bài trước";
+                }
 
                 document.getElementById('score').textContent = score;
                 const reviewAnswersEl = document.getElementById('review-answers');
@@ -269,6 +294,23 @@
                 reviewAnswersEl.innerHTML = html;
             }
 
+            if (!checkCompletionStatus()) {
+                const existingEndTime = localStorage.getItem('quizEndTime_BTH');
+                if (existingEndTime) {
+                    if (Date.now() > existingEndTime) {
+                        submitQuiz(); 
+                    } else {
+                        startScreen.classList.add('hidden');
+                        quizSection.classList.remove('hidden');
+                        renderQuiz();
+                        startTimer();
+                    }
+                } else {
+                    timeGateInterval = setInterval(checkTimeGate, 1000);
+                    checkTimeGate();
+                }
+            }
+            
             startBtn.addEventListener('click', startQuiz);
             submitBtn.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -276,21 +318,6 @@
                     submitQuiz();
                 }
             });
-
-            // Check if a quiz is in progress on page load
-            const existingEndTime = localStorage.getItem('quizEndTime');
-            if (existingEndTime) {
-                if (Date.now() > existingEndTime) {
-                    // Time is up, but user didn't submit. Force submit with empty answers.
-                    submitQuiz(); 
-                } else {
-                    // Resume quiz
-                    startScreen.classList.add('hidden');
-                    quizSection.classList.remove('hidden');
-                    renderQuiz();
-                    startTimer();
-                }
-            }
         });
     </script>
 </body>
