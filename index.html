@@ -1,0 +1,102 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trắc nghiệm Toán 6 - 50 câu (90 phút)</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f4f6f9; }
+    h1 { text-align: center; color: #2c3e50; }
+    .timer { text-align: center; font-size: 20px; margin: 15px; color: #e74c3c; }
+    .question { background: #fff; padding: 15px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .answers label { display: block; margin-bottom: 8px; cursor: pointer; }
+    button { margin: 10px; padding: 10px 20px; border: none; background: #3498db; color: #fff; border-radius: 5px; cursor: pointer; }
+    button:hover { background: #2980b9; }
+    #result { margin-top: 20px; padding: 15px; background: #ecf0f1; border-radius: 8px; font-size: 18px; }
+  </style>
+</head>
+<body>
+
+  <h1>Trắc nghiệm Toán 6 (50 câu - 90 phút)</h1>
+  <div class="timer" id="timer">Thời gian còn lại: 90:00</div>
+  <div id="quiz"></div>
+  <button onclick="submitQuiz()">Nộp bài</button>
+  <button onclick="shuffleQuiz()">Trộn lại đề</button>
+  <div id="result"></div>
+
+  <script>
+    // Danh sách 100 câu hỏi gốc (chỉ demo vài câu, bạn có thể mở rộng)
+    const fullQuestions = [
+      { q: "1) Kết quả của 2^5 là:", options: ["A. 10", "B. 25", "C. 32", "D. 64"], correct: 2 },
+      { q: "2) ƯCLN(24, 36) là:", options: ["A. 6", "B. 12", "C. 18", "D. 24"], correct: 1 },
+      { q: "3) Giá trị của |-7| là:", options: ["A. -7", "B. 0", "C. 7", "D. 14"], correct: 2 },
+      { q: "4) Tích của (-3) × (-5) là:", options: ["A. -15", "B. 8", "C. 15", "D. 0"], correct: 2 },
+      { q: "5) Số nào chia hết cho cả 2 và 5?", options: ["A. 15", "B. 30", "C. 45", "D. 75"], correct: 1 }
+    ];
+
+    let questions = [];
+    let timeLeft = 90 * 60; // 90 phút = 5400 giây
+    let timerInterval;
+
+    function startTimer() {
+      const timerDisplay = document.getElementById("timer");
+      timerInterval = setInterval(() => {
+        let minutes = Math.floor(timeLeft / 60);
+        let seconds = timeLeft % 60;
+        timerDisplay.textContent = `Thời gian còn lại: ${minutes}:${seconds < 10 ? '0'+seconds : seconds}`;
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          submitQuiz(true);
+        }
+        timeLeft--;
+      }, 1000);
+    }
+
+    function loadQuiz() {
+      const quizDiv = document.getElementById("quiz");
+      quizDiv.innerHTML = "";
+      questions.forEach((item, i) => {
+        let answersHTML = "";
+        item.options.forEach((opt, idx) => {
+          answersHTML += `
+            <label>
+              <input type="radio" name="q${i}" value="${idx}"> ${opt}
+            </label>`;
+        });
+        quizDiv.innerHTML += `
+          <div class="question">
+            <p><b>${i+1}. ${item.q}</b></p>
+            <div class="answers">${answersHTML}</div>
+          </div>`;
+      });
+    }
+
+    function submitQuiz(auto=false) {
+      let score = 0;
+      questions.forEach((item, i) => {
+        const answer = document.querySelector(`input[name="q${i}"]:checked`);
+        if (answer && parseInt(answer.value) === item.correct) {
+          score++;
+        }
+      });
+      document.getElementById("result").innerHTML = 
+        (auto ? "⏰ Hết giờ!<br>" : "") + `Bạn đúng ${score}/${questions.length} câu.`;
+      clearInterval(timerInterval);
+      document.querySelectorAll("input").forEach(el => el.disabled = true);
+    }
+
+    function shuffleQuiz() {
+      questions = [...fullQuestions].sort(() => Math.random() - 0.5).slice(0, 50);
+      loadQuiz();
+      document.getElementById("result").innerHTML = "";
+      clearInterval(timerInterval);
+      timeLeft = 90 * 60;
+      startTimer();
+    }
+
+    // Khởi động
+    shuffleQuiz();
+  </script>
+</body>
+</html>
