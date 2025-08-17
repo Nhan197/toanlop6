@@ -1,32 +1,76 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trắc nghiệm Toán 6 - 50 câu (90 phút)</title>
+  <title>Trắc nghiệm Toán 6 – 50/100 câu • 90 phút</title>
+  <meta name="description" content="50 câu ngẫu nhiên từ bộ 100 câu Toán 6 (KNTT Bài 1–15). Đồng hồ 90 phút, hết giờ tự nộp, không reset khi trộn hoặc refresh.">
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; background: #f4f6f9; }
-    h1 { text-align: center; color: #2c3e50; }
-    .timer { text-align: center; font-size: 20px; margin: 15px; color: #e74c3c; }
-    .question { background: #fff; padding: 15px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .answers label { display: block; margin-bottom: 8px; cursor: pointer; }
-    button { margin: 10px; padding: 10px 20px; border: none; background: #3498db; color: #fff; border-radius: 5px; cursor: pointer; }
-    button:hover { background: #2980b9; }
-    #result { margin-top: 20px; padding: 15px; background: #ecf0f1; border-radius: 8px; font-size: 18px; }
+    :root{--bg:#f7f8fb;--card:#fff;--ink:#1f2937;--blue:#2563eb;--blue-2:#1d4ed8;--red:#dc2626;--green:#16a34a;--muted:#6b7280;}
+    *{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);}
+    .wrap{max-width:900px;margin:0 auto;padding:16px 16px 56px;}
+    header{display:flex;gap:12px;align-items:flex-end;justify-content:space-between;margin:14px 0 10px 0;flex-wrap:wrap}
+    h1{margin:0;font-size:22px} .sub{color:var(--muted);font-size:14px}
+    .pill{display:inline-flex;align-items:center;gap:8px;border:1px solid #e5e7eb;background:#fff;border-radius:999px;padding:8px 12px;font-variant-numeric:tabular-nums}
+    .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    button{border:1px solid #e5e7eb;background:#fff;border-radius:12px;padding:10px 14px;cursor:pointer;box-shadow:0 1px 1.5px rgba(0,0,0,.06)}
+    button.primary{background:var(--blue);color:#fff;border-color:var(--blue)} button.primary:hover{background:var(--blue-2)}
+    button:disabled{opacity:.5;cursor:not-allowed}
+    .timer{font-weight:700}
+    .question{background:var(--card);border:1px solid #e5e7eb;border-radius:14px;padding:14px;margin:10px 0;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+    .answers label{display:block;padding:8px 10px;border:1px solid #e5e7eb;border-radius:10px;margin:8px 0;cursor:pointer}
+    .answers input{transform:translateY(1px)}
+    .muted{color:var(--muted)}
+    .score{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:14px;margin-top:12px}
+    .success{color:var(--green)} .danger{color:var(--red)}
+    footer{color:var(--muted);font-size:12px;margin-top:14px}
+    .grid{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin-top:12px}
+    .cell{height:32px;font-size:12px;border:1px solid #e5e7eb;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center}
+    .cell.done{border-color:#16a34a;background:#ecfdf5}
+    .cell.empty{border-color:#f59e0b;background:#fffbeb}
+    .cell.locked{border-color:#ef4444;background:#fef2f2}
   </style>
 </head>
 <body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Trắc nghiệm Toán 6 – 50/100 câu (90 phút)</h1>
+        <div class="sub">Ngẫu nhiên 50 câu từ bộ 100 • Đếm ngược chỉ chạy 1 lần • Hết giờ tự nộp</div>
+      </div>
+      <div class="row">
+        <div class="pill timer" id="timer">⏳ 01:30:00</div>
+        <button id="shuffleBtn" title="Trộn lại 50 câu (không reset thời gian)">Trộn lại đề</button>
+        <button class="primary" id="submitBtn">Nộp bài</button>
+      </div>
+    </header>
 
-  <h1>Trắc nghiệm Toán 6 (50 câu - 90 phút)</h1>
-  <div class="timer" id="timer">Thời gian còn lại: 90:00</div>
-  <div id="quiz"></div>
-  <button onclick="submitQuiz()">Nộp bài</button>
-  <button onclick="shuffleQuiz()">Trộn lại đề</button>
-  <div id="result"></div>
+    <div class="row">
+      <div class="pill" id="statusQ">Câu: 0/50</div>
+      <div class="pill" id="statusDone">Đã chọn: 0</div>
+      <div class="pill" id="statusScore">Điểm: 0</div>
+    </div>
 
-  <script>
-    // Danh sách 100 câu hỏi gốc (chỉ demo vài câu, bạn có thể mở rộng)
+    <div id="quiz"></div>
+
+    <div class="grid" id="jumpGrid"></div>
+
+    <div class="score" id="result" aria-live="polite"></div>
+
+    <footer>Chủ đề: Tập hợp • Số tự nhiên • Cộng/Trừ/Nhân/Chia • Lũy thừa • Thứ tự phép tính • Chia hết • Nguyên tố • ƯCLN/BCNN • Số nguyên • Quy tắc dấu ngoặc.</footer>
+  </div>
+
+<script>
+// ======== CẤU HÌNH ========
+const EXAM_SIZE = 50;
+const EXAM_DURATION = 90 * 60; // giây
+const STORAGE_KEYS = {
+  endAt: "examEndAt",
+  selectedIdxs: "examSelectedIdxs",
+  submitted: "examSubmitted"
+};
+
+// ======== NGÂN HÀNG 100 CÂU ========
 const fullQuestions = [
   { q: "Số nhỏ nhất có 4 chữ số và chia hết cho 9 là", options: ["A. 1002","B. 1008","C. 1017","D. 1026"], correct: 1 },
   { q: "Chọn giá trị lớn nhất", options: ["A. 2^6","B. 3^4","C. 5^3","D. 4^4"], correct: 3 },
@@ -76,6 +120,286 @@ const fullQuestions = [
   { q: "Chọn x: 20 < x < 30 và x là bội của 3 và 4", options: ["A. 20","B. 24","C. 28","D. 30"], correct: 1 },
   { q: "2 × (30 − 4 × 5) + 10 =", options: ["A. 10","B. 20","C. 30","D. 40"], correct: 2 },
   { q: "Trong các số sau, KHÔNG chia hết cho 4 là", options: ["A. 312","B. 516","C. 728","D. 902"], correct: 3 },
+  { q: "||−8| − |5|| =", options: ["A. 3","B. 13","C. −3","D. −13"], correct: 0 },
+  { q: "ƯCLN(72, 108, 90) =", options: ["A. 6","B. 9","C. 18","D. 36"], correct: 2 },
+  { q: "x lớn nhất chia hết cho 24 và 40 với x ≤ 200", options: ["A. 80","B. 120","C. 160","D. 200"], correct: 1 },
+  { q: "Các số nguyên nằm giữa −5 và 3 có bao nhiêu phần tử", options: ["A. 6","B. 7","C. 8","D. 9"], correct: 1 },
+  { q: "(−7) + 12 − (−5) =", options: ["A. 0","B. 10","C. 20","D. 24"], correct: 1 },
+  { q: "−(7 − 12) =", options: ["A. −5","B. 5","C. −19","D. 19"], correct: 1 },
+
+  { q: "Số 1 035 chia hết cho", options: ["A. 2","B. 5","C. 10","D. 25"], correct: 1 },
+  { q: "Tính nhanh: 125 + 375 + 500 =", options: ["A. 900","B. 950","C. 1 000","D. 1 100"], correct: 2 },
+  { q: "x nhỏ nhất sao cho x chia hết cho 9 và 5, x < 200", options: ["A. 45","B. 90","C. 135","D. 180"], correct: 0 },
+  { q: "Tổng các chữ số của 10 000 là", options: ["A. 1","B. 4","C. 5","D. 10"], correct: 0 },
+  { q: "Số có ba chữ số chia hết cho 8 là", options: ["A. 248","B. 250","C. 333","D. 562"], correct: 0 },
+  { q: "(3^3 + 4 × 7 − 2) =", options: ["A. 27","B. 53","C. 49","D. 51"], correct: 1 },
+  { q: "Số nguyên tố nhỏ hơn 30 có bao nhiêu số", options: ["A. 8","B. 9","C. 10","D. 11"], correct: 2 },
+  { q: "Tập chữ cái khác nhau của “VIETNAM” có số phần tử là", options: ["A. 4","B. 5","C. 6","D. 7"], correct: 3 },
+  { q: "Số 1 001 chia hết cho", options: ["A. 7","B. 11","C. 13","D. A, B, C đều đúng"], correct: 3 },
+  { q: "x thỏa −3 < x ≤ 2 có bao nhiêu giá trị nguyên", options: ["A. 4","B. 5","C. 6","D. 7"], correct: 1 },
+
+  { q: "Bỏ ngoặc: −(a − b + c) =", options: ["A. −a − b + c","B. −a + b − c","C. −a + b + c","D. −a − b − c"], correct: 1 },
+  { q: "Chữ số hàng chục của số 3·10^4 + 5·10^2 + 8·10 + 6 là", options: ["A. 8","B. 6","C. 5","D. 3"], correct: 0 },
+  { q: "(3 456 + 2 544) − 1 000 =", options: ["A. 5 000","B. 5 500","C. 4 900","D. 4 800"], correct: 0 },
+  { q: "7y = 4 997. Thương và dư của 4 997 ÷ 7 là", options: ["A. 713 dư 6","B. 714 dư 1","C. 713 dư 5","D. 714 dư 3"], correct: 0 },
+  { q: "36 × (25 + 75) =", options: ["A. 1 800","B. 3 600","C. 2 700","D. 3 000"], correct: 1 },
+  { q: "Số 90 100 so với 9·10^4 + 100", options: ["A. <","B. >","C. =","D. Không xác định"], correct: 2 },
+  { q: "Trên tia số, số gần 0 hơn", options: ["A. 999","B. 1 001","C. bằng nhau","D. Không xác định"], correct: 0 },
+  { q: "Nhà máy sản xuất 2 350 sp/ngày. 12 ngày sản xuất được", options: ["A. 27 000","B. 28 200","C. 23 500","D. 24 600"], correct: 1 },
+  { q: "Tìm x: x × 45 = 9 900", options: ["A. 210","B. 220","C. 230","D. 240"], correct: 1 },
+  { q: "4^4 − 5^3 =", options: ["A. 131","B. 256","C. −131","D. 125"], correct: 0 },
+
+  { q: "(6 − 2) × (9 − 7) × 5 =", options: ["A. 20","B. 40","C. 50","D. 60"], correct: 1 },
+  { q: "Tổng chữ số của số chia hết cho 9 nhỏ nhất có 4 chữ số là", options: ["A. 8","B. 9","C. 10","D. 18"], correct: 1 },
+  { q: "Số nào KHÔNG phải bội của 3", options: ["A. 4 563","B. 6 345","C. 5 346","D. 3 457"], correct: 3 },
+  { q: "Nếu a | b thì ƯCLN(a, b) =", options: ["A. a","B. b","C. 1","D. ab"], correct: 0 },
+  { q: "Cắt 84 cm, 126 cm, 210 cm thành đoạn bằng nhau dài nhất. Mỗi đoạn dài", options: ["A. 14 cm","B. 21 cm","C. 28 cm","D. 42 cm"], correct: 3 },
+  { q: "Số nhỏ nhất chia hết cho 15 và 28 đồng thời < 500 là", options: ["A. 420","B. 210","C. 280","D. 315"], correct: 0 },
+  { q: "Chọn đúng", options: ["A. 10^3 = 100","B. 10^3 = 1000","C. 10^3 = 10 000","D. 10^3 = 10"], correct: 1 },
+  { q: "(80 − 25) ÷ 5 + 2^3 =", options: ["A. 15","B. 17","C. 19","D. 21"], correct: 2 },
+  { q: "Số 2 chữ số lớn nhất chia hết cho 4 và 5", options: ["A. 80","B. 90","C. 95","D. 100"], correct: 0 },
+  { q: "(a + b) + c = a + (b + c) luôn đúng với", options: ["A. Cộng số tự nhiên","B. Trừ số tự nhiên","C. Chia số tự nhiên","D. Cả B và C"], correct: 0 },
+
+  { q: "x có ba chữ số, hàng chục là 7. Số nào chia hết cho 3?", options: ["A. 472","B. 571","C. 683","D. 774"], correct: 3 },
+  { q: "x nhỏ nhất > 200 chia hết cho 9 và 4", options: ["A. 204","B. 216","C. 228","D. 252"], correct: 1 },
+  { q: "Tổng các số nguyên từ −1 đến −10", options: ["A. −45","B. −55","C. −65","D. 0"], correct: 1 },
+  { q: "|−12| − |−9| + |−3| =", options: ["A. 0","B. 6","C. 12","D. 18"], correct: 1 },
+  { q: "Chọn số HỢP SỐ", options: ["A. 2","B. 3","C. 5","D. 21"], correct: 3 },
+  { q: "Phân tích 1 000", options: ["A. 2^3·5^3","B. 2^4·5^2","C. 2^2·5^4","D. 2^5·5^3"], correct: 0 },
+  { q: "Số KHÔNG chia hết cho 25", options: ["A. 225","B. 350","C. 475","D. 560"], correct: 3 },
+  { q: "Chọn số < 50 chia hết cho 3 và khi chia 5 dư 2", options: ["A. 17","B. 32","C. 47","D. 42"], correct: 3 },
+  { q: "100 − 10 ÷ 2 × 5 bằng 75 nếu đặt ngoặc", options: ["A. 100 − (10 ÷ 2) × 5","B. (100 − 10) ÷ (2 × 5)","C. 100 − 10 ÷ (2 × 5)","D. (100 − 10) ÷ 2 × 5"], correct: 0 },
+  { q: "(10^2) − (3^2) − (4^2) =", options: ["A. 25","B. 75","C. 50","D. 0"], correct: 1 },
+
+  { q: "(−12) + 7 − 4 =", options: ["A. −1","B. −9","C. −5","D. −3"], correct: 1 },
+  { q: "Số 250 chia hết cho", options: ["A. 2, 5 và 10","B. 2 và 5","C. 5 và 10","D. chỉ 5"], correct: 0 },
+  { q: "Trong các số 91; 121; 169; 221 – số KHÔNG nguyên tố là", options: ["A. 91","B. 121","C. 169","D. Tất cả"], correct: 3 },
+  { q: "Hai đèn chớp: A mỗi 6s, B mỗi 8s. Sau bao lâu chớp cùng lúc?", options: ["A. 14s","B. 24s","C. 36s","D. 48s"], correct: 1 },
+  { q: "x có 3 chữ số, tổng chữ số 18 và x chia hết cho 9. Chọn đúng", options: ["A. 954","B. 882","C. 765","D. Tất cả đúng"], correct: 3 },
+  { q: "(a − b) + (−c) =", options: ["A. a − b + c","B. a − b − c","C. a + b − c","D. −a − b − c"], correct: 1 },
+  { q: "504 × 25 =", options: ["A. 12 100","B. 12 500","C. 12 600","D. 12 700"], correct: 2 },
+  { q: "7 200 ÷ 90 =", options: ["A. 70","B. 72","C. 80","D. 90"], correct: 2 },
+  { q: "Chọn phát biểu đúng", options: ["A. Số chia hết cho 9 chắc chắn chia hết cho 3","B. Số chia hết cho 6 chắc chắn chia hết cho 9","C. Số chia hết cho 8 chắc chắn chia hết cho 4","D. A và C đúng"], correct: 3 },
+  { q: "10^3 − (2^5 + 3^4) =", options: ["A. 887","B. 781","C. 889","D. 901"], correct: 0 }
+];
+
+// ======== TIỆN ÍCH ========
+function shuffle(arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function formatHMS(sec){const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60;return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`}
+
+// ======== TRẠNG THÁI ========
+let questions = [];     // 50 câu đang thi (mảng object)
+let submitted = false;
+let timerStarted = false;
+let timeLeft = EXAM_DURATION;
+let tick = null;
+
+// ======== KHỞI TẠO HOẶC TẢI LẠI TRẠNG THÁI ========
+function loadSelectedFromStorage(){
+  const raw = localStorage.getItem(STORAGE_KEYS.selectedIdxs);
+  if (!raw) return null;
+  try{
+    const idxs = JSON.parse(raw);
+    if (!Array.isArray(idxs) || idxs.length === 0) return null;
+    return idxs.map(i => fullQuestions[i]);
+  }catch(e){return null;}
+}
+
+function saveSelectedToStorage(){
+  const idxs = questions.map(q => fullQuestions.findIndex(item => item.q===q.q && item.options[0]===q.options[0]));
+  localStorage.setItem(STORAGE_KEYS.selectedIdxs, JSON.stringify(idxs));
+}
+
+function pickNewExam(){
+  const idxs = shuffle([...Array(fullQuestions.length).keys()]).slice(0, EXAM_SIZE);
+  questions = idxs.map(i => fullQuestions[i]);
+  saveSelectedToStorage();
+}
+
+// ======== ĐỒNG HỒ: CHẠY 1 LẦN, PERSIST ========
+function startTimerOnce(){
+  if (timerStarted) return;
+  timerStarted = true;
+
+  let endAt = parseInt(localStorage.getItem(STORAGE_KEYS.endAt) || "0", 10);
+  const now = Date.now();
+
+  if (!endAt || isNaN(endAt) || endAt <= now){
+    endAt = now + EXAM_DURATION*1000;
+    localStorage.setItem(STORAGE_KEYS.endAt, String(endAt));
+  }
+  submitted = localStorage.getItem(STORAGE_KEYS.submitted) === "1";
+
+  const timerEl = document.getElementById("timer");
+
+  function renderTimer(){
+    const remain = Math.max(0, Math.floor((endAt - Date.now())/1000));
+    timeLeft = remain;
+    timerEl.textContent = "⏳ " + formatHMS(remain);
+    if (submitted || remain<=0){
+      clearInterval(tick);
+      if (!submitted){
+        autoSubmitOnTimeout();
+      }else{
+        timerEl.textContent = "⏳ 00:00:00";
+        lockInputs();
+      }
+    }
+  }
+  renderTimer();
+  tick = setInterval(renderTimer, 1000);
+}
+
+// ======== RENDER ========
+function renderExam(){
+  const quiz = document.getElementById("quiz");
+  quiz.innerHTML = "";
+  questions.forEach((item, i) => {
+    const wrap = document.createElement("div");
+    wrap.className = "question";
+    const title = document.createElement("p");
+    title.innerHTML = `<b>${i+1}. ${item.q}</b>`;
+    const ans = document.createElement("div");
+    ans.className = "answers";
+    item.options.forEach((opt, idx) => {
+      const id = `q${i}_${idx}`;
+      const label = document.createElement("label");
+      const input = document.createElement("input");
+      input.type = "radio";
+      input.name = `q${i}`;
+      input.value = idx;
+      input.id = id;
+      if (submitted) input.disabled = true;
+      label.htmlFor = id;
+      label.appendChild(input);
+      const text = document.createTextNode(" " + opt);
+      label.appendChild(text);
+      ans.appendChild(label);
+    });
+    wrap.appendChild(title);
+    wrap.appendChild(ans);
+    quiz.appendChild(wrap);
+  });
+  renderGrid();
+  updateStatus();
+}
+
+function renderGrid(){
+  const g = document.getElementById("jumpGrid");
+  g.innerHTML = "";
+  for (let i=0;i<questions.length;i++){
+    const cell = document.createElement("div");
+    cell.className = "cell";
+    const chosen = document.querySelector(`input[name="q${i}"]:checked`);
+    if (submitted){
+      if (!chosen) cell.classList.add("locked");
+      else {
+        const ok = parseInt(chosen.value,10) === questions[i].correct;
+        cell.classList.add(ok ? "done" : "locked");
+      }
+    } else {
+      if (chosen) cell.classList.add("done"); else cell.classList.add("empty");
+      cell.title = `Tới câu ${i+1}`;
+      cell.onclick = () => {
+        document.getElementById(`q${i}_0`)?.scrollIntoView({behavior:"smooth",block:"center"});
+      };
+    }
+    cell.textContent = i+1;
+    g.appendChild(cell);
+  }
+}
+
+function updateStatus(){
+  const total = questions.length;
+  const done = Array.from({length: total}).reduce((acc, _, i)=>{
+    return acc + (document.querySelector(`input[name="q${i}"]:checked`) ? 1 : 0);
+  },0);
+  const score = calcScore();
+  document.getElementById("statusQ").textContent = `Câu: ${total}/${EXAM_SIZE}`;
+  document.getElementById("statusDone").textContent = `Đã chọn: ${done}`;
+  document.getElementById("statusScore").textContent = `Điểm: ${score}/${total}`;
+}
+
+function calcScore(){
+  if (!submitted) return 0;
+  let score = 0;
+  for (let i=0;i<questions.length;i++){
+    const chosen = document.querySelector(`input[name="q${i}"]:checked`);
+    if (chosen && parseInt(chosen.value,10) === questions[i].correct) score++;
+  }
+  return score;
+}
+
+// ======== NỘP BÀI ========
+function lockInputs(){
+  document.querySelectorAll("input[type=radio]").forEach(el=>el.disabled=true);
+}
+function showResult(auto){
+  const total = questions.length;
+  let correct = 0;
+  for (let i=0;i<total;i++){
+    const chosen = document.querySelector(`input[name="q${i}"]:checked`);
+    if (chosen && parseInt(chosen.value,10) === questions[i].correct) correct++;
+  }
+  const percent = Math.round(correct/total*100);
+  const r = document.getElementById("result");
+  r.innerHTML = (auto? "⏰ Hết giờ! ":"") + `<b>Kết quả:</b> ${correct}/${total} (${percent}%)`;
+  updateStatus();
+  renderGrid();
+}
+function submitQuiz(){
+  if (submitted) return;
+  submitted = true;
+  clearInterval(tick);
+  localStorage.setItem(STORAGE_KEYS.submitted, "1");
+  localStorage.setItem(STORAGE_KEYS.endAt, String(Date.now()));
+  lockInputs();
+  showResult(false);
+}
+function autoSubmitOnTimeout(){
+  submitted = true;
+  localStorage.setItem(STORAGE_KEYS.submitted, "1");
+  localStorage.setItem(STORAGE_KEYS.endAt, String(Date.now()));
+  lockInputs();
+  showResult(true);
+}
+
+// ======== SỰ KIỆN ========
+document.addEventListener("change", (e)=>{
+  if (e.target && e.target.matches("input[type=radio]")){
+    updateStatus();
+  }
+});
+
+document.getElementById("submitBtn").addEventListener("click", submitQuiz);
+
+document.getElementById("shuffleBtn").addEventListener("click", ()=>{
+  // Trộn lại đề nhưng KHÔNG reset thời gian
+  pickNewExam();
+  renderExam();
+  if (submitted) lockInputs();
+  document.getElementById("result").innerHTML = "";
+});
+
+// ======== KHỞI ĐỘNG ========
+(function init(){
+  const stored = loadSelectedFromStorage();
+  if (stored && stored.length===EXAM_SIZE){
+    questions = stored;
+  } else {
+    pickNewExam();
+  }
+  renderExam();
+  startTimerOnce();
+  if (localStorage.getItem(STORAGE_KEYS.submitted)==="1"){
+    submitted = true;
+    lockInputs();
+    showResult(false);
+  }
+})();
+</script>
+</body>
+</html>
   { q: "||−8| − |5|| =", options: ["A. 3","B. 13","C. −3","D. −13"], correct: 0 },
   { q: "ƯCLN(72, 108, 90) =", options: ["A. 6","B. 9","C. 18","D. 36"], correct: 2 },
   { q: "x lớn nhất chia hết cho 24 và 40 với x ≤ 200", options: ["A. 80","B. 120","C. 160","D. 200"], correct: 1 },
